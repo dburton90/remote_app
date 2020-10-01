@@ -23,7 +23,9 @@ def gen_frames(width=640, monitor=1, fps=30):  # generate frame by frame from ca
             # frame = mss.tools.to_png(frame.rgb, size=(width, height))
             frame = numpy.array(frame)
             frame = cv2.resize(frame, dsize=(width, height), interpolation=cv2.INTER_CUBIC)
+            # _, frame = cv2.imencode('.png', frame, [cv2.IMWRITE_PNG_COMPRESSION, 1])
             _, frame = cv2.imencode('.png', frame)
+            # _, frame = cv2.imencode('.jpg', frame)
             frame = frame.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/png\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
