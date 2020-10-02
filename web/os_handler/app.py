@@ -3,6 +3,8 @@ import pyautogui
 import mouse
 from flask_socketio import SocketIO, Namespace
 
+from os_handler.programs import programs
+
 sio = SocketIO(cors_allowed_origins="*")
 
 
@@ -22,6 +24,22 @@ def mouse_click(data):
         pyautogui.doubleClick()
     else:
         pyautogui.click()
+
+
+@sio.on('program')
+def on_program(data):
+    print('program', data)
+    try:
+        program = programs[data['name']]
+        action = data['action']
+        action = getattr(program, action)
+    except (KeyError, AttributeError):
+        return
+    args = data.get('args', [])
+    if not isinstance(args, list):
+        args = [args]
+    action(*args)
+
 
 
 @sio.on('connect')

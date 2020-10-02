@@ -1,10 +1,9 @@
 <template lang="pug">
   .custom-area(@click="click")
-    q-card.cursor-pointer.bg-blue(style="height: 100%", v-touch-pan.mouse="handlePan")
+    q-card.cursor-pointer.bg-blue(style="height: 100%", v-touch-pan.prevent.mouse="handlePan")
 </template>
 
 <script>
-import { debounce } from 'quasar';
 import { socket } from 'boot/socket';
 
 export default {
