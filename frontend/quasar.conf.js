@@ -24,6 +24,7 @@ module.exports = function (/* ctx */) {
 
       'i18n',
       'axios',
+      'socket',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -68,6 +69,11 @@ module.exports = function (/* ctx */) {
       // https://quasar.dev/quasar-cli/handling-webpack
       extendWebpack(cfg) {
         cfg.module.rules.push({
+          test: /\.pug$/,
+          loader: 'pug-plain-loader',
+        });
+
+        cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
@@ -78,9 +84,27 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      https: false,
+      // https: true,
       port: 8080,
-      open: true, // opens browser window automatically
+      open: false, // opens browser window automatically
+      proxy: {
+        '/streaming': {
+          target: 'http://localhost:5000/streaming',
+          pathRewrite: {
+            '^/streaming': '',
+          },
+          // headers: {
+          //   host: 'dashboard.vscht.cz'
+          // }
+        },
+        '/socket.io': {
+          target: 'http://localhost:5000/socket.io/',
+          pathRewrite: {
+            '^/socket.io': '',
+          },
+          ws: true,
+        },
+      },
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework

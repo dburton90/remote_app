@@ -1,23 +1,20 @@
-from time import sleep, time
+from time import sleep
 
-from flask import Flask, render_template, Response
 import cv2
 import mss
 import numpy
+from flask import Response, Blueprint
 
-from vidgear.gears import ScreenGear
+bp = Blueprint('streaming', __name__, url_prefix='/streaming')
 
-# open any valid video stream
-
-app = Flask(__name__)
 
 def gen_frames(width=640, monitor=1, fps=30):  # generate frame by frame from camera
     with mss.mss() as sct:
         monitor = sct.monitors[monitor]
         height = int(round((width / monitor['width']) * monitor['height'], 0))
-        sleep_fps = 1/fps
-        while(True):
-            frame =  sct.grab(monitor)
+        sleep_fps = 1 / fps
+        while (True):
+            frame = sct.grab(monitor)
             if frame is None:
                 break
             # frame = mss.tools.to_png(frame.rgb, size=(width, height))
@@ -32,19 +29,8 @@ def gen_frames(width=640, monitor=1, fps=30):  # generate frame by frame from ca
             sleep(sleep_fps)
 
 
-
-@app.route('/video_feed')
+@bp.route('/screen')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(gen_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-@app.route('/')
-def index():
-    """Video streaming home page."""
-    return render_template('index.html')
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
