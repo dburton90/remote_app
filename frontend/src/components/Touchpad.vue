@@ -16,7 +16,6 @@ export default {
   methods: {
     handlePan({ evt, ...info }) {
       // native Javascript event
-      // console.log(evt)
       socket.emit('mouse move', info.delta);
       this.clicks = 0;
     },

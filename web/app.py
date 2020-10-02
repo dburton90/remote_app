@@ -20,6 +20,9 @@ def create_app(config='config.Default'):
     from src import streamer
     app.register_blueprint(streamer.bp)
 
+    from os_handler import programs
+    app.register_blueprint(programs.bp)
+
     @app.route('/')
     def index():
         return FRONTEND.joinpath('index.html').read_text()

@@ -41,6 +41,17 @@ def on_program(data):
     action(*args)
 
 
+@sio.on('key')
+def on_key(data):
+    print('key', data)
+    pyautogui.press(data)
+
+
+@sio.on('hotKey')
+def hot_key(data):
+    print('hotkey', data)
+    pyautogui.hotkey(*data)
+
 
 @sio.on('connect')
 def on_connect(**kwargs):

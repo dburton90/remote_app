@@ -1,11 +1,8 @@
 from subprocess import run
 
-OS = {
-    'esc': ['esc'],
-    'full-screen': ['win', 'f'],
-    'tab': ['tab'],
-    'space': ['space']
-}
+from flask import Blueprint, jsonify
+
+bp = Blueprint('os-handler', __name__, url_prefix='/os-handler')
 
 
 class Key:
@@ -15,6 +12,20 @@ class Key:
         self.keys = keys
         self.optional_keys = optional_keys
         self.icon = icon
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'keys': self.keys,
+            'options': self.optional_keys,
+            'icon': self.icon,
+        }
+
+
+OS = [Key('esc', ['esc']),
+      Key('full-screen', ['winleft', 'f']),
+      Key('tab', ['tab']),
+      Key('space', ['space']), ]
 
 
 class Program:
@@ -48,6 +59,13 @@ class Program:
 
     def close(self):
         return run(['pkill', '-f', self.path], capture_output=True).stdout.decode()
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'icon': self.icon,
+            'keys': [k.to_dict() for k in self.keys]
+        }
 
 
 class Spotify(Program):
@@ -101,7 +119,7 @@ programs = {p.name: p
                             Key('up', ['pageup']),
                             Key('top', ['home']),
                             Key('zoom +', ['ctrl', '+']),
-                            Key('zoom +', ['ctrl', '-']),
+                            Key('zoom -', ['ctrl', '-']),
                             Key('search', ['/']),
                             Key('find link', ["'"]),
                             Key('search next', ['f3']),
@@ -109,3 +127,14 @@ programs = {p.name: p
                         ]),
                 Spotify(),
             ]}
+
+
+@bp.route('/programs')
+def get_programs():
+    p = {k: p.to_dict() for k, p in programs.items()}
+    return jsonify({'programs': p})
+
+
+@bp.route('/default-keys')
+def default_keys():
+    return jsonify({'defaultKeys': {k.name: k.to_dict() for k in OS}})

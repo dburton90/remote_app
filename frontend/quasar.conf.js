@@ -88,14 +88,17 @@ module.exports = function (/* ctx */) {
       port: 8080,
       open: false, // opens browser window automatically
       proxy: {
+        '/os-handler': {
+          target: 'http://localhost:5000/os-handler',
+          pathRewrite: {
+            '^/os-handler': '',
+          },
+        },
         '/streaming': {
           target: 'http://localhost:5000/streaming',
           pathRewrite: {
             '^/streaming': '',
           },
-          // headers: {
-          //   host: 'dashboard.vscht.cz'
-          // }
         },
         '/socket.io': {
           target: 'http://localhost:5000/socket.io/',
