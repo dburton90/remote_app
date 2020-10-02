@@ -1,8 +1,10 @@
 import os
+import pyautogui
 import mouse
 from flask_socketio import SocketIO, Namespace
 
 sio = SocketIO(cors_allowed_origins="*")
+
 
 @sio.on('mouse move')
 def mouse_move(data):
@@ -11,6 +13,15 @@ def mouse_move(data):
     if not (data['x'] == data['y'] == 0):
         mouse.move(**data, absolute=False)
     print(data)
+
+
+@sio.on('mouse click')
+def mouse_click(data):
+    print('click', data)
+    if data > 1:
+        pyautogui.doubleClick()
+    else:
+        pyautogui.click()
 
 
 @sio.on('connect')
