@@ -1,14 +1,16 @@
+import os
+import mouse
 from flask_socketio import SocketIO, Namespace
 
 sio = SocketIO(cors_allowed_origins="*")
 
-
-@sio.on('test')
-def test(sid, data):
-    print('test called')
-    print(sid)
+@sio.on('mouse move')
+def mouse_move(data):
+    data.setdefault('x', 0)
+    data.setdefault('y', 0)
+    if not (data['x'] == data['y'] == 0):
+        mouse.move(**data, absolute=False)
     print(data)
-    sio.emit('bravo test', 'hura')
 
 
 @sio.on('connect')
